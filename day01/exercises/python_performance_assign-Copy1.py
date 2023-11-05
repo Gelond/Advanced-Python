@@ -30,7 +30,7 @@ def ft_concatenate(l_strings, d):
 # - improve speed up of the function
 # *Hint: you may need to look to the string functions in python documentation*
 
-# In[20]:
+# In[75]:
 
 
 # write your code here
@@ -52,6 +52,11 @@ def generate_strings():
     
 random_strings=generate_strings()
 d = " "
+
+
+# In[76]:
+
+
 get_ipython().run_line_magic('timeit', 'ft_concatenate(random_strings,d)')
 
 
@@ -117,10 +122,25 @@ def ft_concatenate(l_strings, d):
     return res
 
 
-# In[70]:
+# In[71]:
 
 
 get_ipython().system('jupyter nbconvert --to script python_performance_assign-Copy1.ipynb')
+
+
+# In[77]:
+
+
+def ft_concatenate(l_strings, d):
+    """concatenate list of strings into one string separated by delimiter"""
+    res = d.join(l_strings)
+    return res
+
+
+# In[78]:
+
+
+get_ipython().run_line_magic('timeit', 'ft_concatenate(random_strings,d)')
 
 
 # ### Exercise 2
@@ -183,7 +203,7 @@ print("Distinct Values (Fast Method):", result_fast)
 print("Execution Time (Fast Method):", fast_method_time)
 
 
-# In[14]:
+# In[79]:
 
 
 # bruteforce method
@@ -195,7 +215,14 @@ def bruteforce_method(arr):
     return len(unique_values)
 
 
-# In[15]:
+# In[80]:
+
+
+list = [2,3,2,2,3]
+bruteforce_method(list)
+
+
+# In[81]:
 
 
 # fast method
@@ -203,18 +230,33 @@ def fast_method(arr):
     return len(set(arr))
 
 
-# In[16]:
+# In[82]:
+
+
+fast_method(list)
+
+
+# In[127]:
 
 
 import time
-# Create a random list of numbers for testing
-list = [2,3,2,2,3]
-# time the two methods
-start = time.time()
-bruteforce_method(list)
-end = time.time()
 
-print(end-start)
+# Create a random list of numbers for testing
+n = 1000
+random_list = [random.randint(1,100) for i in range(n)]
+
+
+# In[128]:
+
+
+# time the two methods
+get_ipython().run_line_magic('timeit', 'bruteforce_method(random_list)')
+
+
+# In[129]:
+
+
+get_ipython().run_line_magic('timeit', 'fast_method(random_list)')
 
 
 # ## Cython exercises
@@ -223,15 +265,21 @@ print(end-start)
 
 # 1. load the cython extension.
 
-# In[12]:
+# In[186]:
 
 
-get_ipython().run_line_magic('cython', '')
+get_ipython().system('pip install cython')
+
+
+# In[190]:
+
+
+get_ipython().run_line_magic('load_ext', 'Cython')
 
 
 # 2. Considering the following polynomial function:
 
-# In[12]:
+# In[191]:
 
 
 def poly(a,b):
@@ -240,24 +288,39 @@ def poly(a,b):
 
 # - Create an equivalent Cython function of `poly` with name `poly_cy`.
 
-# In[ ]:
+# In[237]:
 
 
-
+get_ipython().run_cell_magic('cython', '', 'cdef poly_cy(double a, double b):\n    return 10.5 * a + 3 * (b**2)\n')
 
 
 # 3. time the performance of Python and Cython version of the function, what is the factor of speed up between the two verions.
 
-# In[13]:
+# In[238]:
+
+
+a=100
+b=256
+
+
+# In[239]:
 
 
 # write your code here
+
+get_ipython().run_line_magic('timeit', 'poly(a,b)')
+
+
+# In[240]:
+
+
+get_ipython().run_line_magic('timeit', 'poly_cy(a,b)')
 
 
 # 4. Now let's work on another example using loop.
 #     - rewrite the same function below fib that calculates the fibonacci sequence using cython, but now try to add type for the variables used inside it, add a prefix `_cy` to your new cython function.
 
-# In[14]:
+# In[262]:
 
 
 def fib(n):
@@ -268,28 +331,76 @@ def fib(n):
     return a
 
 
-# In[15]:
+# In[263]:
 
 
-# write your code here
+get_ipython().run_line_magic('load_ext', 'Cython')
+
+
+# In[264]:
+
+
+get_ipython().run_cell_magic('cython', '', 'def fib_cy(int n):\n    cdef int a, b, i\n    a = 0\n    b = 1\n    for i in range(n):\n        a, b = a + b, a\n\n    return a\n')
 
 
 # - time the two function for fibonacci series, with n = 20, what is the factor of speed now, What do you think?
 
-# In[16]:
+# In[265]:
+
+
+n = 20
+
+
+# In[266]:
 
 
 # write your code here
+get_ipython().run_line_magic('timeit', 'fib(n)')
+
+
+# In[267]:
+
+
+get_ipython().run_line_magic('timeit', 'fib_cy(n)')
 
 
 # 5. Recursive functions are functions that call themselves during their execution. Another interesting property of the Fibonacci sequence is that it can be written as a recursive function. That’s because each item depends on the values of other items (namely item n-1 and item n-2)
 # 
 # - Rewrite the fib function using recursion. Is it faster than the non-recursive version? Does Cythonizing it give even more of an advantage? 
 
-# In[17]:
+# In[268]:
 
 
 # write your code here
+def fib_rec(n):
+    if n == 0 or n == 1:
+        return n
+    else: return fib_rec(n-1) + fib_rec(n-2)
+fib_rec(7)
+
+
+# In[363]:
+
+
+get_ipython().run_cell_magic('cython', '', 'cdef int fib_rec_cy(int n):\n    if n==0 or n==1:\n        return n\n    else:\n        return fib_rec_cy(n-1) + fib_rec_cy(n-2)\n    \n')
+
+
+# In[273]:
+
+
+n = 20
+
+
+# In[274]:
+
+
+get_ipython().run_line_magic('timeit', 'fib_rec(n)')
+
+
+# In[275]:
+
+
+get_ipython().run_line_magic('timeit', 'fib_rec_cy(n)')
 
 
 # ### Exercise 2
@@ -331,14 +442,59 @@ def fib(n):
 #  
 # *Hint: you can import function from C libraries using the following approach `from libc.<name of c library> cimport <library function name>`, replace the holders `<>` with the right identities for the current problem*
 
-# In[18]:
+# In[357]:
 
 
 import random
 def monte_carlo_pi(nsamples):
     pi = 0.
    # Implement your code here
+    
+    cile_points = 0
+    square_points = 0
+    increment = 0
+    while increment < nsamples:
+        d = 0.
+        x = random.uniform(-1.,1.)
+        y = random.uniform(-1.,1.)
+        d = x*x + y*y
+        if d <= 1:
+            cile_points+=1
+        square_points+=1
+        increment+=1
+            
+    pi = 4*(cile_points/square_points)
     return pi
+
+
+# In[358]:
+
+
+nsamples = 100000
+
+
+# In[359]:
+
+
+monte_carlo_pi(nsamples)
+
+
+# In[360]:
+
+
+get_ipython().run_cell_magic('cython', '', 'from libc.stdlib cimport rand\ncdef float monte_carlo_pi_cy(int nsamples):\n    cdef int cile_points, square_points, increment\n    cdef float d, pi, x, y\n    pi = 0.\n    cile_points = 0\n    square_points = 0\n    \n    for increment in range(nsamples):\n        d = 0.\n        x = rand()\n        y = rand()\n        d = x*x + y*y\n        if d <= 1: cile_points+=1\n        square_points+=1\n        \n    pi = 4*(cile_points/square_points)\n    return pi\n')
+
+
+# In[361]:
+
+
+get_ipython().run_line_magic('timeit', 'monte_carlo_pi(nsamples)')
+
+
+# In[362]:
+
+
+get_ipython().run_line_magic('timeit', 'monte_carlo_pi_cy(nsamples)')
 
 
 # ## Numba exercises
